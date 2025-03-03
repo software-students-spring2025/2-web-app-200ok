@@ -136,6 +136,7 @@ def handle_order():
     food = flask.request.form.get('food')
     address = flask.request.form.get('address')
     price = flask.request.form.get('price')
+    contact = flask.request.form.get('contact')
     db.create_order(user_name, name, food, address, price, contact)
     return flask.redirect('/home')
 
