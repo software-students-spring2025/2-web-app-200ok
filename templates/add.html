@@ -2,10 +2,11 @@
 
 {% block content %}
 	<h1>Add New Order</h1>
-	<form method="POST" action="/newOrder">
+	<a href="/home" class="home-btn">Back Home</a>
+	<form method="POST" action="/newOrder", class="add-form">
 		<div>
 			<label for="user_name">Merchant Name:</label>
-			<input type="text" id="user_name" name="user_name" required>
+			<input type="text" id="user_name" name="user_name" value = "{{user}}" readonly>
 		</div>
 		<div>
 			<label for="name">Consumer Name:</label>
@@ -22,6 +23,10 @@
 		<div>
 			<label for="price">Price:</label>
 			<input type="text" id="price" name="price" required>
+		</div>
+		<div>
+			<label for="contact">Contact Info:</label>
+			<input type="text" id="contact" name="contact" required>
 		</div>
 		<button type="submit">Submit Order</button>
 	</form>
