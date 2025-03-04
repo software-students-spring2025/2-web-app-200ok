@@ -97,16 +97,26 @@ def detail(order_id):
 @app.route('/detail/<order_id>', methods=['POST'])
 def handle_detail(order_id):
     order = db.get_order(order_id)
-    updated_data = {
-        "consumer": flask.request.form.get("customerName"),
-        "food": flask.request.form.get("dishName"),
-        "address": flask.request.form.get("address"),
-        "price": float(flask.request.form.get("price")),  
-        "contact": flask.request.form.get("contact")
-    }
-    result = db.update_order(order_id, updated_data)
-    if result: 
-        return flask.redirect(flask.url_for('home'))
+    price = flask.request.form.get("price")
+    
+    try:
+        int_price = int(price)
+        if int_price <= 0:
+            raise ValueError()
+            
+        updated_data = {
+            "consumer": flask.request.form.get("customerName"),
+            "food": flask.request.form.get("dishName"),
+            "address": flask.request.form.get("address"),
+            "price": int_price,  
+            "contact": flask.request.form.get("contact")
+        }
+        result = db.update_order(order_id, updated_data)
+        if result: 
+            return flask.redirect(flask.url_for('home'))
+    except ValueError:
+        error_message = "Please enter a valid number for price."
+        return flask.render_template('detail.html', order=order, error=error_message)
 
     return flask.render_template('detail.html', order=order)
 
@@ -131,16 +141,33 @@ def order():
 def handle_order(): 
     if 'user' not in flask.session:
         return flask.redirect('/login')
+    
     user_name = flask.request.form.get('user_name')
     name = flask.request.form.get('name')
     food = flask.request.form.get('food')
     address = flask.request.form.get('address')
     price = flask.request.form.get('price')
     contact = flask.request.form.get('contact')
-    db.create_order(user_name, name, food, address, price, contact)
-    return flask.redirect('/home')
+    
+    try:
+        int_price = int(price)
+        if int_price <= 0:
+            raise ValueError()
+            
+        db.create_order(user_name, name, food, address, price, contact)
+        return flask.redirect('/home')
+    except ValueError:
+        error_message = "Please enter a valid number for price."
+        user = flask.session['user']
+        return flask.render_template('add.html', 
+                                  user=user, 
+                                  error=error_message,
+                                  name_value=name,
+                                  food_value=food,
+                                  address_value=address,
+                                  price_value="",
+                                  contact_value=contact)
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=3000) # run this line can see it on phone or computer
     # app.run(debug=True, port=config.PORT, ) # run this line can see it on computer
-

@@ -8,7 +8,15 @@
         <br>
         <a href ="/detail/{{ order._id }}/delete" class="delete-btn">Delete This Order</a>
 
-        <form action="/detail/{{ order._id }}" method="POST">
+        <div id="errorModal" class="modal" {% if error %}style="display:block"{% endif %}>
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <p id="errorMessage">{{ error }}</p>
+                <button id="okButton">OK</button>
+            </div>
+        </div>
+
+        <form action="/detail/{{ order._id }}" method="POST" id="orderForm">
             <label for="customerName">Customer:</label>
             <input type="text" id="customerName" name="customerName" value="{{ order.consumer }}">
         
@@ -16,7 +24,7 @@
             <input type="text" id="dishName" name="dishName" value="{{ order.food }}">
         
             <label for="price">Price:</label>
-            <input type="number" id="price" name="price" value="{{ order.price }}" step="0.01">
+            <input type="text" id="price" name="price" value="{{ order.price }}">
         
             <label for="address">Address:</label>
             <input type="text" id="address" name="address" value="{{ order.address }}">
@@ -27,4 +35,34 @@
             <button type="submit" class="save-btn">Save</button>
         </form>       
     </div>
+
+    <script>
+        document.getElementById('orderForm').addEventListener('submit', function(e) {
+            const priceInput = document.getElementById('price');
+            const price = priceInput.value;
+            
+            if (isNaN(parseInt(price)) || !price.trim() || parseInt(price) <= 0) {
+                e.preventDefault();
+                document.getElementById('errorMessage').textContent = 'Please enter a valid number for price.';
+                document.getElementById('errorModal').style.display = 'block';
+                priceInput.focus();
+            }
+        });
+        
+        document.querySelector('.close').addEventListener('click', function() {
+            document.getElementById('errorModal').style.display = 'none';
+        });
+        
+        document.getElementById('okButton').addEventListener('click', function() {
+            document.getElementById('errorModal').style.display = 'none';
+            document.getElementById('price').focus();
+        });
+        
+        window.addEventListener('click', function(event) {
+            const modal = document.getElementById('errorModal');
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        });
+    </script>
 {% endblock %}

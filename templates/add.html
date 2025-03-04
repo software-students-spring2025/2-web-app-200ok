@@ -1,33 +1,72 @@
 {% extends "base.html" %}
 
 {% block content %}
-	<h1>Add New Order</h1>
-	<a href="/home" class="home-btn">Back Home</a>
-	<form method="POST" action="/newOrder", class="add-form">
-		<div>
-			<label for="user_name">Merchant Name:</label>
-			<input type="text" id="user_name" name="user_name" value = "{{user}}" readonly>
-		</div>
-		<div>
-			<label for="name">Consumer Name:</label>
-			<input type="text" id="name" name="name" required>
-		</div>
-		<div>
-			<label for="food">Food:</label>
-			<input type="text" id="food" name="food" required>
-		</div>
-		<div>
-			<label for="address">Address:</label>
-			<input type="text" id="address" name="address" required>
-		</div>
-		<div>
-			<label for="price">Price:</label>
-			<input type="text" id="price" name="price" required>
-		</div>
-		<div>
-			<label for="contact">Contact Info:</label>
-			<input type="text" id="contact" name="contact" required>
-		</div>
-		<button type="submit">Submit Order</button>
-	</form>
+    <h1>Add New Order</h1>
+    <a href="/home" class="home-btn">Back Home</a>
+    
+    <div id="errorModal" class="modal" {% if error %}style="display:block"{% endif %}>
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <p id="errorMessage">{{ error }}</p>
+            <button id="okButton">OK</button>
+        </div>
+    </div>
+    
+    <form method="POST" action="/newOrder" class="add-form" id="orderForm">
+        <div>
+            <label for="user_name">Merchant Name:</label>
+            <input type="text" id="user_name" name="user_name" value="{{ user }}" readonly>
+        </div>
+        <div>
+            <label for="name">Consumer Name:</label>
+            <input type="text" id="name" name="name" value="{{ name_value or '' }}" required>
+        </div>
+        <div>
+            <label for="food">Food:</label>
+            <input type="text" id="food" name="food" value="{{ food_value or '' }}" required>
+        </div>
+        <div>
+            <label for="address">Address:</label>
+            <input type="text" id="address" name="address" value="{{ address_value or '' }}" required>
+        </div>
+        <div>
+            <label for="price">Price:</label>
+            <input type="text" id="price" name="price" value="{{ price_value or '' }}" required>
+        </div>
+        <div>
+            <label for="contact">Contact Info:</label>
+            <input type="text" id="contact" name="contact" value="{{ contact_value or '' }}" required>
+        </div>
+        <button type="submit">Submit Order</button>
+    </form>
+    
+    <script>
+        document.getElementById('orderForm').addEventListener('submit', function(e) {
+            const priceInput = document.getElementById('price');
+            const price = priceInput.value;
+            
+            if (isNaN(parseInt(price)) || !price.trim() || parseInt(price) <= 0) {
+                e.preventDefault();
+                document.getElementById('errorMessage').textContent = 'Please enter a valid number for price.';
+                document.getElementById('errorModal').style.display = 'block';
+                priceInput.focus();
+            }
+        });
+        
+        document.querySelector('.close').addEventListener('click', function() {
+            document.getElementById('errorModal').style.display = 'none';
+        });
+        
+        document.getElementById('okButton').addEventListener('click', function() {
+            document.getElementById('errorModal').style.display = 'none';
+            document.getElementById('price').focus();
+        });
+        
+        window.addEventListener('click', function(event) {
+            const modal = document.getElementById('errorModal');
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        });
+    </script>
 {% endblock %}
