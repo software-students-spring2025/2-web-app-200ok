@@ -6,6 +6,7 @@ A little exercise to build a web application following an agile development proc
 - [Haohan Fang](https://github.com/FrankFangH)
 - [Yilei Weng](https://github.com/ShadderD)
 - [Jiaxi Zhang](https://github.com/SuQichen777)
+- [Bill Feng](https://github.com/BillBBle)
 
 
 ## Product vision statement
